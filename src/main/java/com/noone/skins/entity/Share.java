@@ -14,9 +14,9 @@ import lombok.Data;
 public class Share {
     @TableId(value = "id",type = IdType.AUTO)//设置id自动生成
     private Integer id;
-    private String type;
-    private String name;
-    private String url;
-    private String text;
+    private String dataType;
+    private String dataName;
+    private String dataUrl;
+    private String dataText;
     private Integer likes;
 }
