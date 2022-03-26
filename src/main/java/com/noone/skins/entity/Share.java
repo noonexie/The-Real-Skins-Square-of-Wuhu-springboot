@@ -1,9 +1,11 @@
 package com.noone.skins.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import org.apache.ibatis.type.JdbcType;
 
 /**
  * @author xad
@@ -14,9 +16,13 @@ import lombok.Data;
 public class Share {
     @TableId(value = "id",type = IdType.AUTO)//设置id自动生成
     private Integer id;
+    @TableField(value = "data_type",jdbcType = JdbcType.VARCHAR)
     private String dataType;
+    @TableField(value = "data_name",jdbcType = JdbcType.VARCHAR)
     private String dataName;
+    @TableField(value = "data_url",jdbcType = JdbcType.VARCHAR)
     private String dataUrl;
+    @TableField(value = "data_text",jdbcType = JdbcType.LONGVARCHAR)
     private String dataText;
     private Integer likes;
 }
