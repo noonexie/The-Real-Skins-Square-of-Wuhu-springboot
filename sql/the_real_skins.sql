@@ -54,3 +54,13 @@ SELECT * FROM share_data WHERE data_url NOT REGEXP 'http';
 -- 删除不匹配的
 -- ----------------------------
 DELETE FROM share_data WHERE data_url NOT REGEXP 'http';
+
+-- ----------------------------
+-- 筛选id大于45的
+-- ----------------------------
+SELECT * from share_data WHERE id > 45;
+
+-- ----------------------------
+-- 删除id大于45的
+-- ----------------------------
+DELETE from share_data WHERE id > 45;

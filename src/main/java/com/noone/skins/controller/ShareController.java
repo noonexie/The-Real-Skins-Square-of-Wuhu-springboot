@@ -29,8 +29,14 @@ public class ShareController {
         return Result.success();
     }
 
+    @GetMapping("/listById/{id}")
+    public Result<?> listById(@PathVariable Integer id) {
+        Share share = shareMapper.selectById(id);
+        return Result.success(share);
+    }
+
     //    按关键字分页查询，返回可分页的结果
-    @GetMapping
+    @GetMapping("/listAll")
     public Result<?> listPage(@RequestParam(defaultValue = "1") Integer pageNum,
                               @RequestParam(defaultValue = "10") Integer pageSize,
                               @RequestParam(defaultValue = "") String type,
@@ -45,8 +51,8 @@ public class ShareController {
 
     //    点赞&点踩更新,put更新按钮
     @PutMapping
-    public Result<?> changeLikes(@RequestBody Share share) {
-        shareMapper.updateById(share);
+    public synchronized Result<?> changeLikes(@RequestBody Share share) {
+        shareMapper.updateById(share);//必传参数为ID，其他参数不传不变，传了的变
         return Result.success();
     }
 }
