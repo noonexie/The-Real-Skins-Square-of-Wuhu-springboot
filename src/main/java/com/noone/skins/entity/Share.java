@@ -24,5 +24,7 @@ public class Share {
     private String dataUrl;
     @TableField(value = "data_text",jdbcType = JdbcType.LONGVARCHAR)
     private String dataText;
+    @TableField(value = "img_url",jdbcType = JdbcType.LONGVARCHAR)
+    private String imgUrl;
     private Integer likes;
 }

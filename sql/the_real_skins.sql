@@ -64,3 +64,9 @@ SELECT * from share_data WHERE id > 45;
 -- 删除id大于45的
 -- ----------------------------
 DELETE from share_data WHERE id > 45;
+
+-- ----------------------------
+-- 添加用户上传图片的地址存储字段
+-- ----------------------------
+ALTER TABLE `share_data`
+    ADD COLUMN `img_url`  text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL COMMENT '上传图片的地址' AFTER `data_text`;
