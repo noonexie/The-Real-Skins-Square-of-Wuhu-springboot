@@ -70,3 +70,18 @@ DELETE from share_data WHERE id > 45;
 -- ----------------------------
 ALTER TABLE `share_data`
     ADD COLUMN `img_url`  text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL COMMENT '上传图片的地址' AFTER `data_text`;
+
+-- ----------------------------
+-- 新建用户信息表
+-- ----------------------------
+CREATE TABLE `user` (
+                        `id`  int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户ID' ,
+                        `username`  varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL COMMENT '用户名' ,
+                        `password`  varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL COMMENT '用户密码' ,
+                        `nickname`  varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL COMMENT '用户昵称' ,
+                        `avatar`  varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL COMMENT '用户头像URL' ,
+                        PRIMARY KEY (`id`)
+)
+    DEFAULT CHARACTER SET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='用户信息表'
+;

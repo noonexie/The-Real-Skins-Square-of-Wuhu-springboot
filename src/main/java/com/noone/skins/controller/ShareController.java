@@ -38,11 +38,39 @@ public class ShareController {
     @Resource//引入sharemapper
     private ShareMapper shareMapper;
 
-    //        保存用户上传的分享数据到数据库
+    //保存用户上传的分享数据到数据库
     @PostMapping("/dataShare")
-//定义一个post接口,此函数的参数是前台传过来的json数据，通过@RequestBody注解将参数转化为java对象，所以要定义一个java对象做参数///*泛型？：表示任何一种类型*/
+    //定义一个post接口,此函数的参数是前台传过来的json数据，通过@RequestBody注解将参数转化为java对象，所以要定义一个java对象做参数///*泛型？：表示任何一种类型*/
     public Result<?> saveShare(@RequestBody Share share) {
         shareMapper.insert(share);
+        return Result.success();
+    }
+
+    //通过ID查找
+    @GetMapping("/listById/{id}")
+    public Result<?> listById(@PathVariable Integer id) {
+        Share share = shareMapper.selectById(id);
+        return Result.success(share);
+    }
+
+    //按关键字分页查询，返回可分页的结果
+    @GetMapping("/listAll")
+    public Result<?> listPage(@RequestParam(defaultValue = "1") Integer pageNum,
+                              @RequestParam(defaultValue = "10") Integer pageSize,
+                              @RequestParam(defaultValue = "") String type,
+                              @RequestParam(defaultValue = "") String search) {
+        //pageNum对应前端传入的当前页数，pageSize对应前端传入的每页多少条,search前端传入的关键字：按关键字查询  并均设置默认值
+        LambdaQueryWrapper<Share> wrapper = Wrappers.<Share>lambdaQuery();
+        wrapper.eq(Share::getDataType, type)  //查找匹配数据库中data_type="video"的
+                .like(Share::getDataName, search);      //再查找模糊匹配名称为关键字的
+        Page<Share> videoPage = shareMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
+        return Result.success(videoPage);
+    }
+
+    //点赞&点踩更新,put更新按钮
+    @PutMapping
+    public synchronized Result<?> changeLikes(@RequestBody Share share) {
+        shareMapper.updateById(share);//必传参数为ID，其他参数不传不变，传了的变
         return Result.success();
     }
 
@@ -52,7 +80,7 @@ public class ShareController {
         String originalFilename = file.getOriginalFilename();  // 获取源文件的名称
         // 定义文件的唯一标识（前缀）防止同名文件上传被替换
         String flag = IdUtil.fastSimpleUUID();
-        String rootFilePath = System.getProperty("user.dir") + "/files/" + flag + "_" + originalFilename;  // 获取上传的路径
+        String rootFilePath = System.getProperty("user.dir") + "/files/shareData/" + flag + "_" + originalFilename;  // 获取上传的路径
         File saveFile = new File(rootFilePath);
         if (!saveFile.getParentFile().exists()) {
             saveFile.getParentFile().mkdirs();
@@ -61,31 +89,11 @@ public class ShareController {
         return Result.success("http://" + ip + ":" + port + "/share/imgDownload/" + flag);  // 返回结果 url
     }
 
-    @GetMapping("/listById/{id}")
-    public Result<?> listById(@PathVariable Integer id) {
-        Share share = shareMapper.selectById(id);
-        return Result.success(share);
-    }
-
-    //    按关键字分页查询，返回可分页的结果
-    @GetMapping("/listAll")
-    public Result<?> listPage(@RequestParam(defaultValue = "1") Integer pageNum,
-                              @RequestParam(defaultValue = "10") Integer pageSize,
-                              @RequestParam(defaultValue = "") String type,
-                              @RequestParam(defaultValue = "") String search) {
-//        pageNum对应前端传入的当前页数，pageSize对应前端传入的每页多少条,search前端传入的关键字：按关键字查询  并均设置默认值
-        LambdaQueryWrapper<Share> wrapper = Wrappers.<Share>lambdaQuery();
-        wrapper.eq(Share::getDataType, type)  //查找匹配数据库中data_type="video"的
-                .like(Share::getDataName, search);      //再查找模糊匹配名称为关键字的
-        Page<Share> videoPage = shareMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
-        return Result.success(videoPage);
-    }
-
     //图片下载接口，前端传入参数：文件唯一表示flag（uuid），response对象：通过response对象可以把当前文件通过流的方式输出到浏览器，就实现了文件的下载
     @GetMapping("/imgDownload/{flag}")
     public void getFiles(@PathVariable String flag, HttpServletResponse response) {
         OutputStream os;  // 新建一个输出流对象
-        String basePath = System.getProperty("user.dir") + "/files/";  // 定于文件上传的根路径
+        String basePath = System.getProperty("user.dir") + "/files/shareData/";  // 定于文件上传的根路径
         List<String> fileNames = FileUtil.listFileNames(basePath);  // 获取所有的文件名称
         String fileName = fileNames.stream().filter(name -> name.contains(flag)).findAny().orElse("");  // 找到跟参数一致的文件
         try {
@@ -101,12 +109,5 @@ public class ShareController {
         } catch (Exception e) {
             System.out.println("文件下载失败");
         }
-    }
-
-    //    点赞&点踩更新,put更新按钮
-    @PutMapping
-    public synchronized Result<?> changeLikes(@RequestBody Share share) {
-        shareMapper.updateById(share);//必传参数为ID，其他参数不传不变，传了的变
-        return Result.success();
     }
 }
