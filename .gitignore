@@ -1,6 +1,7 @@
 # dir
 target
 files
+src/test
 
 ### IntelliJ IDEA ###
 .idea

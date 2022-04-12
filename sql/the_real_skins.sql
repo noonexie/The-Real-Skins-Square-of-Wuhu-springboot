@@ -85,3 +85,6 @@ CREATE TABLE `user` (
     DEFAULT CHARACTER SET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 COMMENT='用户信息表'
 ;
+
+
+SELECT * FROM share_data WHERE img_url IS NULL;

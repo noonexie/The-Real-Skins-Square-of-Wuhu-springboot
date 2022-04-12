@@ -29,11 +29,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/share")//定义路由
 public class ShareController {
-    @Value("${server.port}")
-    private String port;
 
-    @Value("localhost")
-    private String ip;
+//    @Value("${server.port}")
+//    private String port;
+//
+//    @Value("localhost")
+//    private String ip;
 
     @Resource//引入sharemapper
     private ShareMapper shareMapper;
@@ -69,7 +70,7 @@ public class ShareController {
 
     //点赞&点踩更新,put更新按钮
     @PutMapping
-    public synchronized Result<?> changeLikes(@RequestBody Share share) {
+    public synchronized Result<?> changeShare(@RequestBody Share share) {
         shareMapper.updateById(share);//必传参数为ID，其他参数不传不变，传了的变
         return Result.success();
     }
@@ -77,6 +78,9 @@ public class ShareController {
     //图片上传接口，前端传入图像文件，后端返回url
     @PostMapping("/imgUpload")
     public Result<?> upload(MultipartFile file) throws IOException {
+        String devUrl = "http://localhost:9090";
+        String prodUrl = "http://wuhuback.vip.frp.wlphp.com:88";
+
         String originalFilename = file.getOriginalFilename();  // 获取源文件的名称
         // 定义文件的唯一标识（前缀）防止同名文件上传被替换
         String flag = IdUtil.fastSimpleUUID();
@@ -86,7 +90,7 @@ public class ShareController {
             saveFile.getParentFile().mkdirs();
         }
         FileUtil.writeBytes(file.getBytes(), rootFilePath);  // 把文件写入到上传的路径 //使用工具类，不需要自己进行数据流操作读写
-        return Result.success("http://" + ip + ":" + port + "/share/imgDownload/" + flag);  // 返回结果 url
+        return Result.success(devUrl /*+ ip + ":" + port */ + "/share/imgDownload/" + flag);  // 返回结果 url
     }
 
     //图片下载接口，前端传入参数：文件唯一表示flag（uuid），response对象：通过response对象可以把当前文件通过流的方式输出到浏览器，就实现了文件的下载
