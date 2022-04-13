@@ -69,9 +69,32 @@ public class ShareController {
     }
 
     //点赞&点踩更新,put更新按钮
-    @PutMapping
-    public synchronized Result<?> changeShare(@RequestBody Share share) {
-        shareMapper.updateById(share);//必传参数为ID，其他参数不传不变，传了的变
+    @PutMapping("uLikes")
+    public synchronized Result<?> changeLikes(@RequestParam Integer id, @RequestParam Integer type) {
+        Integer likes = shareMapper.selectById(id).getLikes();
+        Share share = shareMapper.selectById(id);
+        if (type == 0) {
+            share.setLikes(likes - 1);
+            shareMapper.updateById(share);
+        }
+        if (type == 1) {
+            share.setLikes(likes + 1);
+            shareMapper.updateById(share);
+        }
+        return Result.success();
+    }
+
+    //新增图片更新,put更新按钮
+    @PutMapping("uImgUrl")
+    public synchronized Result<?> addImg(@RequestParam Integer id, @RequestParam String url) {
+        String imgUrl = shareMapper.selectById(id).getImgUrl();
+        Share share = shareMapper.selectById(id);
+        imgUrl += ("," + url);
+        if (imgUrl.charAt(0) == ',')
+            imgUrl.substring(1);
+
+        share.setImgUrl(imgUrl);
+        shareMapper.updateById(share);
         return Result.success();
     }
 
