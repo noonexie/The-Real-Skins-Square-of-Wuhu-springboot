@@ -91,7 +91,10 @@ public class ShareController {
         Share share = shareMapper.selectById(id);
         imgUrl += ("," + url);
         if (imgUrl.charAt(0) == ',')
-            imgUrl.substring(1);
+            imgUrl = imgUrl.substring(1);
+
+        if (imgUrl.substring(0, 5).equals("null,"))
+            imgUrl = imgUrl.substring(5);
 
         share.setImgUrl(imgUrl);
         shareMapper.updateById(share);
@@ -113,7 +116,7 @@ public class ShareController {
             saveFile.getParentFile().mkdirs();
         }
         FileUtil.writeBytes(file.getBytes(), rootFilePath);  // 把文件写入到上传的路径 //使用工具类，不需要自己进行数据流操作读写
-        return Result.success(devUrl /*+ ip + ":" + port */ + "/share/imgDownload/" + flag);  // 返回结果 url
+        return Result.success(prodUrl /*+ ip + ":" + port */ + "/share/imgDownload/" + flag);  // 返回结果 url
     }
 
     //图片下载接口，前端传入参数：文件唯一表示flag（uuid），response对象：通过response对象可以把当前文件通过流的方式输出到浏览器，就实现了文件的下载
