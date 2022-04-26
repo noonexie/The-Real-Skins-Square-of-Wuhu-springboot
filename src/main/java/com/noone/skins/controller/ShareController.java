@@ -58,12 +58,11 @@ public class ShareController {
     @GetMapping("/listAll")
     public Result<?> listPage(@RequestParam(defaultValue = "1") Integer pageNum,
                               @RequestParam(defaultValue = "10") Integer pageSize,
-                              @RequestParam(defaultValue = "") String type,
                               @RequestParam(defaultValue = "") String search) {
         //pageNum对应前端传入的当前页数，pageSize对应前端传入的每页多少条,search前端传入的关键字：按关键字查询  并均设置默认值
         LambdaQueryWrapper<Share> wrapper = Wrappers.<Share>lambdaQuery();
-        wrapper.eq(Share::getDataType, type)  //查找匹配数据库中data_type="video"的
-                .like(Share::getDataName, search);      //再查找模糊匹配名称为关键字的
+        wrapper.like(Share::getDataName, search);      //再查找模糊匹配名称为关键字的
+//        .eq(Share::getDataType, type)  //查找匹配数据库中data_type="video"的
         Page<Share> videoPage = shareMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
         return Result.success(videoPage);
     }
@@ -106,6 +105,7 @@ public class ShareController {
     public Result<?> upload(MultipartFile file) throws IOException {
         String devUrl = "http://localhost:9090";
         String prodUrl = "http://wuhuback.vip.frp.wlphp.com:88";
+        String eCloudUrl = "http://36.133.29.83:9090";
 
         String originalFilename = file.getOriginalFilename();  // 获取源文件的名称
         // 定义文件的唯一标识（前缀）防止同名文件上传被替换
@@ -116,7 +116,7 @@ public class ShareController {
             saveFile.getParentFile().mkdirs();
         }
         FileUtil.writeBytes(file.getBytes(), rootFilePath);  // 把文件写入到上传的路径 //使用工具类，不需要自己进行数据流操作读写
-        return Result.success(prodUrl /*+ ip + ":" + port */ + "/share/imgDownload/" + flag);  // 返回结果 url
+        return Result.success(eCloudUrl /*+ ip + ":" + port */ + "/share/imgDownload/" + flag);  // 返回结果 url
     }
 
     //图片下载接口，前端传入参数：文件唯一表示flag（uuid），response对象：通过response对象可以把当前文件通过流的方式输出到浏览器，就实现了文件的下载
