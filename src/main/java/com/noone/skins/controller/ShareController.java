@@ -20,6 +20,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.List;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * @author xad
@@ -116,7 +122,7 @@ public class ShareController {
             saveFile.getParentFile().mkdirs();
         }
         FileUtil.writeBytes(file.getBytes(), rootFilePath);  // 把文件写入到上传的路径 //使用工具类，不需要自己进行数据流操作读写
-        return Result.success(eCloudUrl /*+ ip + ":" + port */ + "/share/imgDownload/" + flag);  // 返回结果 url
+        return Result.success(devUrl /*+ ip + ":" + port */ + "/share/imgDownload/" + flag);  // 返回结果 url
     }
 
     //图片下载接口，前端传入参数：文件唯一表示flag（uuid），response对象：通过response对象可以把当前文件通过流的方式输出到浏览器，就实现了文件的下载
@@ -139,5 +145,57 @@ public class ShareController {
         } catch (Exception e) {
             System.out.println("文件下载失败");
         }
+    }
+
+    //  通过url获取网页title
+    @GetMapping("/urlParse")
+    public Result<?> getUrlTitle(@RequestParam String dataUrl) {
+        String ans = "";
+        try {
+            //建立连接
+            URL url = new URL(dataUrl);
+            HttpURLConnection httpUrlConn = (HttpURLConnection) url.openConnection();
+            httpUrlConn.setDoInput(true);
+            httpUrlConn.setRequestMethod("GET");
+            httpUrlConn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
+            //获取输入流
+            InputStream input = httpUrlConn.getInputStream();
+            //将字节输入流转换为字符输入流
+            InputStreamReader read = new InputStreamReader(input, "utf-8");
+            //为字符输入流添加缓冲
+            BufferedReader br = new BufferedReader(read);
+            // 读取返回结果
+            String data = br.readLine();
+            while (data != null) {
+                int tllIndex = data.indexOf("<title");
+                int tlrIndex = tllIndex;
+                int trlIndex = tllIndex;
+                if (tllIndex != -1) {
+//                    System.out.println(data.length());
+                    for (int i = tllIndex + 1; i < data.length(); i++) {
+                        if (data.charAt(i) == '>') {
+                            tlrIndex = i;
+                        }
+                        if (data.charAt(i) == '<' && data.charAt(i + 1) == '/') {
+                            trlIndex = i;
+                            break;
+                        }
+                    }
+                    ans = data.substring(tlrIndex + 1, trlIndex).equals("") ? "前往观看" : data.substring(tlrIndex + 1, trlIndex);
+                    break;
+                }
+                data = br.readLine();
+            }
+            // 释放资源
+            br.close();
+            read.close();
+            input.close();
+            httpUrlConn.disconnect();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Result.success(ans);
     }
 }
