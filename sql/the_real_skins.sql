@@ -88,3 +88,13 @@ COMMENT='用户信息表'
 
 
 SELECT * FROM share_data WHERE img_url IS NULL;
+
+CREATE TABLE user (
+`id` INT  UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
+`username` VARCHAR(255) NOT NULL DEFAULT '' COMMENT '姓名',
+`password` VARCHAR(255) NOT NULL DEFAULT '' COMMENT '密码',
+`start_time` datetime  DEFAULT NULL COMMENT '记录创建时间',
+`validity_time` datetime  DEFAULT NULL COMMENT '有效时间',
+`status` TINYINT NOT NULL DEFAULT '1' COMMENT '1代表记录有效，0代表记录无效',
+PRIMARY KEY (`id`)
+) ENGINE = INNODB charset = utf8mb4 COMMENT '用户信息表';
