@@ -32,7 +32,8 @@ public class ScheduleController {
                               @RequestParam(defaultValue = "") String search) {
         //pageNum对应前端传入的当前页数，pageSize对应前端传入的每页多少条,search前端传入的关键字：按关键字查询  并均设置默认值
         LambdaQueryWrapper<Schedule> wrapper = Wrappers.<Schedule>lambdaQuery();
-        wrapper.like(Schedule::getEnd, search);      //再查找模糊匹配名称为关键字的
+        wrapper.ge(Schedule::getEnd, search);
+//        wrapper.like(Schedule::getEnd, search);      //再查找模糊匹配名称为关键字的
 //        .eq(Share::getDataType, type)  //查找匹配数据库中data_type="video"的
         Page<Schedule> videoPage = scheduleMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
         return Result.success(videoPage);
