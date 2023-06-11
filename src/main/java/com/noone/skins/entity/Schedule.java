@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 public class Schedule {
     @TableId(value = "id",type = IdType.AUTO)//设置id自动生成
     private Integer id;
-    private String user;
+    private Integer user;
     private Timestamp start;
     private Timestamp end;
     private String things;
